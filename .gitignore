@@ -18,8 +18,7 @@ tmp/
 .vscode
 .idea
 
-files/avatars
-files/news-picture
+files
 
 
 .env
