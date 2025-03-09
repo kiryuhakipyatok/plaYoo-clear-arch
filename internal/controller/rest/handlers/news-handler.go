@@ -48,8 +48,11 @@ func (nh NewsHandler) CreateNews(c *fiber.Ctx) error{
 	}
 
 	nh.Logger.Infof("news created: %v",news)
-
-	return c.JSON(news)
+	response:=dto.NewsResponse{
+		Id: news.Id,
+		Title: news.Title,
+	}
+	return c.JSON(response)
 }
 
 func (nh NewsHandler) GetNewsById(c *fiber.Ctx) error{

@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"log"
-	//"github.com/joho/godotenv"
 	"os"
 )
 
@@ -51,9 +50,6 @@ func (as *authService) Register(c context.Context, login,tg,password string) (*e
 }
 
 func (as *authService) GetTokenForLogin(c context.Context, login,password string) (string,error){
-	// if err := godotenv.Load("../../.env");err != nil {
-    //     log.Fatalf("error loading .env file when login: %v", err.Error())
-    // }
 	secret:=os.Getenv("SECRET")
 	if secret == ""{
 		log.Fatal("error secret .env value  is empty")

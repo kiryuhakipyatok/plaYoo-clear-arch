@@ -39,7 +39,15 @@ func (eh EventHandler) CreateEvent(c *fiber.Ctx) error{
 		return e.FailedToCreate(c,eh.Logger,"event",err)
 	}
 	eh.Logger.Infof("event created: %v",event)
-	return c.JSON(event) 
+	response:=dto.EventResponse{
+		Id: event.Id,
+		AuthorId: event.AuthorId,
+		Body: event.Body,
+		Game: event.Game,
+		Time: event.Time,
+		Max: event.Max,
+	}
+	return c.JSON(response) 
 }
 
 func (eh EventHandler) GetEventById(c *fiber.Ctx) error{
