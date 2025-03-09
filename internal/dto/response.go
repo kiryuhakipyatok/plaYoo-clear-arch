@@ -6,21 +6,21 @@ import (
 )
 
 type RegisterResponse struct {
-	Id 			uuid.UUID 
-	Login 		string
-	Telegram 	string
+	Id 			uuid.UUID 	`json:"id"`
+	Login 		string		`json:"login"`
+	Telegram 	string		`json:"telegram"`
 }
 
 type NewsResponse struct {
-	Id 			uuid.UUID 
-	Title 		string
+	Id 			uuid.UUID 	`json:"id"`
+	Title 		string		`json:"title"`
 }
 
 type EventResponse struct {
-	Id 			uuid.UUID 
-	AuthorId 	uuid.UUID
-	Body 		string
-	Game		string
-	Max			int
-	Time		time.Time
+	Id 			uuid.UUID 	`json:"id"`
+	AuthorId 	uuid.UUID	`json:"author-id"`
+	Body 		string		`json:"body"`
+	Game		string		`json:"game"`
+	Max			int			`json:"max"`
+	Time		time.Time	`json:"time"`
 }
