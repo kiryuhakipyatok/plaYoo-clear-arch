@@ -5,15 +5,13 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"playoo/internal/bot"
+	"playoo/internal/config"
 	"sync"
 	"syscall"
-	"test/internal/bot"
-	"test/internal/config"
 	"time"
 	"github.com/joho/godotenv"
 )
-
-
 
 func StartApp() {
 	if err := godotenv.Load("../../.env");err != nil {
@@ -34,7 +32,7 @@ func StartApp() {
 
 	defer func(){
 		if err:=closePostgres.Close();err!=nil{
-			log.Printf("error to close Postgres: %v",err)
+			log.Printf("error to close postgres: %v",err)
 		}else{
 			log.Printf("close postgres success")
 		}
@@ -46,14 +44,20 @@ func StartApp() {
 			}
 		}
 	}()
+
+	logger:=config.NewLogger()
+	validator:=config.NewValidator()
+
 	app:=config.CreateServer()
 	var (
-		port	= os.Getenv("PORT")
+		port = os.Getenv("PORT")
 	)
 	cfg:=&config.BootstrapConfig{
 		App: app,
 		Postgres: postgres,
 		Redis: redis,
+		Logger: logger,
+		Validator: validator,
 	}
 	quit:=make(chan os.Signal,1)
 	signal.Notify(quit,syscall.SIGINT,syscall.SIGTERM)
@@ -70,7 +74,7 @@ func StartApp() {
 	botChan := make(chan *bot.Bot)
 	go func(){
 		defer wg.Done()
-		bot:=config.StartBot(cfg,stop)
+		bot:=config.StartBot(postgres,redis,stop)
 		if bot == nil {
 			log.Println("failed to create bot")
 			return
@@ -79,16 +83,17 @@ func StartApp() {
 		botChan<-bot
 		close(botChan)
 	}()
-	go func(){
-		defer wg.Done()
-		bot:=<-botChan
-		if bot == nil {
-			log.Println("bot is nil, cannot start scheduler")
-			return
-		}
-		log.Println("starting scheduler with bot")
-		config.StartShedule(cfg,stop,bot)
-	}()
+	cfg.Bot=<-botChan
+	if cfg.Bot == nil {
+		log.Println("bot is nil, cannot start scheduler")
+		return
+	}else{
+		go func(){
+			defer wg.Done()
+			log.Println("starting scheduler with bot")
+			config.StartShedule(cfg,stop)
+		}()
+	}
 	<-quit
 	log.Println("shutting down server")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

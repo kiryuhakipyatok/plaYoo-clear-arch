@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"test/internal/domain/entity"
+	"playoo/internal/domain/entity"
 	"gorm.io/gorm"
 )
 

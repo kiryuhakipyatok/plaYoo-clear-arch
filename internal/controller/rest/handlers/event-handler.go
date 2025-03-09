@@ -1,76 +1,69 @@
 package handlers
 
 import (
+	"playoo/internal/domain/service"
+	"playoo/internal/dto"
+	e "playoo/pkg/errors"
 	"strconv"
-	"test/internal/domain/service"
-
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 )
 
 type EventHandler struct{
 	EventService service.EventService
+	Validator 	*validator.Validate
+	Logger 		*logrus.Logger
 }
 
-func NewEventHandler(eventService service.EventService) EventHandler{
+func NewEventHandler(eventService service.EventService,validator *validator.Validate,logger *logrus.Logger) EventHandler{
 	return EventHandler{
 		EventService: eventService,
+		Validator: validator,
+		Logger: logger,
 	}
 }
 
 func (eh EventHandler) CreateEvent(c *fiber.Ctx) error{
 	ctx:=c.Context()
-	var request struct{
-		AuthorId 	string 	`json:"author-id"`
-		Game 		string 	`json:"game"`
-		Body 		string  `json:"body"`
-		Max 		int 	`json:"max"`
-		Minute 		int 	`json:"minute"`
-	}
+	request:=dto.CreateEventRequest{}
+	
 	if err:=c.BodyParser(&request);err!=nil{
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"error":"falied to parse request",
-		})
+		return e.ErrorParse(c,eh.Logger,"request",err)
+	}
+	if err:=eh.Validator.Struct(request);err!=nil{
+		return e.FailedToValidate(c,eh.Logger,err)
 	}
 	event,err:=eh.EventService.CreateEvent(ctx,request.AuthorId,request.Body,request.Game,request.Max,request.Minute)
 	if err!=nil{
-		c.Status(fiber.StatusInternalServerError)
-		return c.JSON(fiber.Map{
-			"error":"falied to create event",
-		})
+		return e.FailedToCreate(c,eh.Logger,"event",err)
 	}
-	return c.JSON(event)
+	eh.Logger.Infof("event created: %v",event)
+	return c.JSON(event) 
 }
 
 func (eh EventHandler) GetEventById(c *fiber.Ctx) error{
 	ctx:=c.Context()
-	id:=c.Query("id")
+	id:=c.Params("id")
 	event,err:=eh.EventService.GetById(ctx,id)
 	if err!=nil{
-		c.Status(fiber.StatusNotFound)
-		return c.JSON(fiber.Map{
-			"error":"event not found",
-		})
+		return e.NotFound(c,eh.Logger,"event",err)
 	}
+	eh.Logger.Infof("event %v received",event)
 	return c.JSON(event)
 }
 
 func (eh EventHandler) GetEventByAmount(c *fiber.Ctx) error{
 	ctx:=c.Context()
-	a:=c.Query("amount")
+	a:=c.Params("amount")
 	amount,err:=strconv.Atoi(a)
 	if err!=nil{
-		c.Status(fiber.StatusInternalServerError)
-		return c.JSON(fiber.Map{
-			"error":"error parse amount",
-		})
+		return e.ErrorParse(c,eh.Logger,"amount",err)
 	}
-	event,err:=eh.EventService.GetByAmount(ctx,amount)
+	events,err:=eh.EventService.GetByAmount(ctx,amount)
 	if err!=nil{
-		c.Status(fiber.StatusNotFound)
-		return c.JSON(fiber.Map{
-			"error":"event not found",
-		})
+		return e.NotFound(c,eh.Logger,"events",err)
 	}
-	return c.JSON(event)
+	eh.Logger.Infof("events %v received",events)
+	return c.JSON(events)
 }

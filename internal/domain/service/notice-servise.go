@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
-	"test/internal/domain/entity"
-	"test/internal/domain/repository"
+	"playoo/internal/domain/entity"
+	"playoo/internal/domain/repository"
+
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	//"github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	//"test/internal/bot"
 )
@@ -17,9 +19,10 @@ type NoticeService interface {
 }
 
 type noticeService struct {
-	NoticeRepository repository.NoticeRepository
-	EventRepository repository.EventRepository
-	UserRepository repository.UserRepository
+	NoticeRepository 	repository.NoticeRepository
+	EventRepository 	repository.EventRepository
+	UserRepository 		repository.UserRepository
+	DB 				   *gorm.DB
 }
 
 func NewNoticeService(

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"test/internal/domain/entity"
+	"playoo/internal/domain/entity"
 	"gorm.io/gorm"
 	"errors"
 	"time"
@@ -23,7 +23,6 @@ type eventRepository struct {
 	DB 		*gorm.DB
 	Redis   *redis.Client
 }
-
 
 func NewEventRepository(db *gorm.DB, redis *redis.Client) EventRepository{
 	return &eventRepository{

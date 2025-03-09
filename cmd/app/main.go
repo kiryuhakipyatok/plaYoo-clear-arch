@@ -1,7 +1,7 @@
 package main
 
 import (
-	"test/internal/app"
+	"playoo/internal/app"
 )
 func main() {
 	app.StartApp()

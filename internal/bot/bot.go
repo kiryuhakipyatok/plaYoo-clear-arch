@@ -6,8 +6,8 @@ import (
 	"os"
 	"strconv"
 	"sync"
-	"test/internal/domain/entity"
-	"test/internal/domain/repository"
+	"playoo/internal/domain/entity"
+	"playoo/internal/domain/repository"
 	"github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -42,7 +42,7 @@ func (b *Bot) SendMsg(event entity.Event,msg string) error{
 			chatID, _ := strconv.ParseInt(user.ChatId, 10, 64)
 			message:=tgbotapi.NewMessage(chatID,msg)
 			if _,err := b.bot.Send(message); err != nil {
-			log.Printf("failed to send message to user %s: %v", user.Tg, err)
+			log.Printf("failed to send message to user %s: %v", user.Telegram, err)
 			}
 		}
 	}

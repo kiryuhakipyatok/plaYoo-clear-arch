@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"errors"
-	"test/internal/domain/entity"
-	"test/internal/domain/repository"
+	"playoo/internal/domain/entity"
+	"playoo/internal/domain/repository"
 	"time"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
@@ -41,7 +41,7 @@ func (as *authService) Register(c context.Context, login,tg,password string) (*e
 	user:=entity.User{
 		Id:uuid.New(),
 		Login: login,
-		Tg: tg,
+		Telegram: tg,
 		Password: hashPassword,
 	}
 	if err:=as.UserRepository.Create(c,user);err!=nil{

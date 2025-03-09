@@ -3,8 +3,8 @@ package shedulers
 import (
 	"context"
 	"log"
-	"test/internal/bot"
-	"test/internal/domain/service"
+	"playoo/internal/bot"
+	"playoo/internal/domain/service"
 	"time"
 
 	//tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"

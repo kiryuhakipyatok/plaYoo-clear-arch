@@ -2,12 +2,11 @@ package repository
 
 import (
 	"context"
-	"test/internal/domain/entity"
+	"playoo/internal/domain/entity"
 	"gorm.io/gorm"
 )
 
 type GameRepository interface{
-	Create(c context.Context,game entity.Game) error
 	Save(c context.Context,game entity.Game) error
 	FindByName(c context.Context, name string) (*entity.Game,error)
 	FindByAmount(c context.Context, amount int) ([]entity.Game,error)
@@ -23,12 +22,6 @@ func NewGameRepository(db *gorm.DB) GameRepository{
 	}
 }
 
-func (gr *gameRepository) Create(c context.Context,game entity.Game) error{
-	if err:=gr.DB.WithContext(c).Create(&game).Error;err!=nil{
-		return err
-	}
-	return nil
-}
 func (gr *gameRepository) Save(c context.Context,game entity.Game) error{
 	if err:=gr.DB.WithContext(c).Save(&game).Error;err!=nil{
 		return err

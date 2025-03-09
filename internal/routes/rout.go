@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"test/internal/controller/rest/handlers"
+	"playoo/internal/controller/rest/handlers"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -27,8 +27,8 @@ func (cfg *RoutConfig) Setup(){
 }
 
 func (cfg *RoutConfig) SetupUserRoute(){
-	cfg.App.Get("/api/user",cfg.UserHandler.GetUserById)
-	cfg.App.Get("/api/users",cfg.UserHandler.GetUsersByAmount)
+	cfg.App.Get("/api/users/:id",cfg.UserHandler.GetUserById)
+	cfg.App.Get("/api/users/:amount",cfg.UserHandler.GetUsersByAmount)
 }
 
 func (cfg *RoutConfig) SetupAuthRoute(){
@@ -40,7 +40,6 @@ func (cfg *RoutConfig) SetupAuthRoute(){
 }
 
 func (cfg *RoutConfig) SetupGameRoute(){
-	cfg.App.Post("/admin/new-game",cfg.GameHandler.AddGameToTable)
 	cfg.App.Post("/api/add-game",cfg.GameHandler.AddGameToUser)
 
 	cfg.App.Get("/api/games",cfg.GameHandler.GetGameByName)
@@ -49,15 +48,15 @@ func (cfg *RoutConfig) SetupGameRoute(){
 func (cfg *RoutConfig) SetupEventRoute(){
 	cfg.App.Post("/api/add-event",cfg.EventHandler.CreateEvent)
 	
-	cfg.App.Get("/api/event",cfg.EventHandler.GetEventById)
-	cfg.App.Get("/api/events",cfg.EventHandler.GetEventByAmount)
+	cfg.App.Get("/api/events/:id",cfg.EventHandler.GetEventById)
+	cfg.App.Get("/api/events/:amount",cfg.EventHandler.GetEventByAmount)
 }
 
 func (cfg *RoutConfig) SetupNewsRoute(){
 	cfg.App.Post("/admin/add-news",cfg.NewsHandler.CreateNews)
 	
-	cfg.App.Get("/api/news",cfg.NewsHandler.GetNewsById)
-	cfg.App.Get("/api/some-news",cfg.NewsHandler.GetNewsByAmount)
+	cfg.App.Get("/api/news/:id",cfg.NewsHandler.GetNewsById)
+	cfg.App.Get("/api/news/:amount",cfg.NewsHandler.GetNewsByAmount)
 }
 
 func (cfg *RoutConfig) SetupCommentRoute(){
@@ -67,8 +66,8 @@ func (cfg *RoutConfig) SetupCommentRoute(){
 }
 
 func (cfg *RoutConfig) SetupNotificationsRoute(){
-	cfg.App.Post("/api/delete-notice",cfg.NoticeHandler.DeleteNotice)
-	cfg.App.Post("/api/delete-all-notices",cfg.NoticeHandler.DeleteAllNotifications)
+	cfg.App.Delete("/api/notifications",cfg.NoticeHandler.DeleteNotice)
+	cfg.App.Delete("/api/notifications/:id",cfg.NoticeHandler.DeleteAllNotifications)
 	
-	cfg.App.Get("/api/get-notifications",cfg.NoticeHandler.GetNotifications)
+	cfg.App.Get("/api/notifications",cfg.NoticeHandler.GetNotifications)
 }

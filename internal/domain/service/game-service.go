@@ -1,13 +1,12 @@
 package service
 
 import (
-	"test/internal/domain/repository"
+	"playoo/internal/domain/repository"
 	"context"
-	"test/internal/domain/entity"
+	"playoo/internal/domain/entity"
 )
 
 type GameService interface {
-	AddGameToDB(c context.Context,name string) error
 	AddGameToUser(c context.Context, name,id string) error
 	GetByName(c context.Context, name string) (*entity.Game,error)
 	GetByAmount(c context.Context, amount int) ([]entity.Game,error)
@@ -26,17 +25,6 @@ func NewGameService(gameRepository repository.GameRepository,userRepository repo
 	}
 }
 
-func (gs *gameService) AddGameToDB(c context.Context,name string) error{
-	game:=entity.Game{
-		Name: name,
-		NumberOfPlayers: 0,
-		NumberOfEvents: 0,
-	}
-	if err:=gs.GameRepository.Create(c,game);err!=nil{
-		return err
-	}
-	return nil
-}
 func (gs *gameService) AddGameToUser(c context.Context, name,id string) error{
 	// TODO TRANSACTIONS
 	game,err:=gs.GameRepository.FindByName(c,name)

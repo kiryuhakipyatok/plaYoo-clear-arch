@@ -2,17 +2,24 @@ package handlers
 
 import (
 	"strconv"
-	"test/internal/domain/service"
+	"playoo/internal/domain/service"
 	"github.com/gofiber/fiber/v2"
+	e "playoo/pkg/errors"
+	"github.com/go-playground/validator/v10"
+	"github.com/sirupsen/logrus"
 )
 
 type NoticeHandler struct{
 	NoticeService service.NoticeService
+	Validator 	*validator.Validate
+	Logger 		*logrus.Logger
 }
 
-func NewNoticeHandler(noticeService service.NoticeService) NoticeHandler{
+func NewNoticeHandler(noticeService service.NoticeService,validator *validator.Validate,logger *logrus.Logger) NoticeHandler{
 	return NoticeHandler{
 		NoticeService: noticeService,
+		Logger: logger,
+		Validator: validator,
 	}
 }
 
@@ -21,11 +28,9 @@ func (nh NoticeHandler) DeleteNotice(c *fiber.Ctx) error{
 	id:=c.Query("id")
 	nid:=c.Query("notice")
 	if err:=nh.NoticeService.DeleteNotice(ctx,id,nid);err!=nil{
-		c.Status(fiber.StatusInternalServerError)
-        return c.JSON(fiber.Map{
-            "error": "failed to delete notice",
-        })
+		return e.FailedToDelete(c,nh.Logger,"notification",err)
 	}
+	nh.Logger.Infof("notification %v deleted",nid)
 	return c.JSON(fiber.Map{
 		"message":"success",
 	})
@@ -37,30 +42,23 @@ func (nh NoticeHandler) GetNotifications(c *fiber.Ctx) error{
 	id:=c.Query("id")
 	amount,err:=strconv.Atoi(a)
 	if err!=nil{
-		c.Status(fiber.StatusInternalServerError)
-        return c.JSON(fiber.Map{
-            "error": "error parse amount",
-        })
+		return e.ErrorParse(c,nh.Logger,"amount",err)
 	}
 	notifications,err:=nh.NoticeService.GetNoticeByAmount(ctx,id,amount)
 	if err!=nil{
-		c.Status(fiber.StatusInternalServerError)
-        return c.JSON(fiber.Map{
-            "error": "failed to fetch notifications",
-        })
+		return e.ErrorFetching(c,nh.Logger,"notifications",err)
 	}
+	nh.Logger.Infof("notifications %v recieved",notifications)
 	return c.JSON(notifications)
 }
 
 func (nh NoticeHandler) DeleteAllNotifications(c *fiber.Ctx) error{
 	ctx:=c.Context()
-	id:=c.Query("id")
+	id:=c.Params("id")
 	if err:=nh.NoticeService.DeleteAllNotifications(ctx,id);err!=nil{
-		c.Status(fiber.StatusInternalServerError)
-        return c.JSON(fiber.Map{
-            "error": "failed to delete all notifications",
-        })
+		return e.FailedToDelete(c,nh.Logger,"all notification",err)
 	}
+	nh.Logger.Infof("user %v notifications deleted",id)
 	return c.JSON(fiber.Map{
 		"message":"success",
 	})

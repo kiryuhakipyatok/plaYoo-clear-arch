@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"test/internal/domain/entity"
+	"playoo/internal/domain/entity"
 	"time"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -36,11 +36,13 @@ func (ur *userRepository) Create(c context.Context ,user entity.User) error{
 	if err:=ur.DB.WithContext(c).Create(&user).Error;err!=nil{
 		return err
 	}
-	userdata,err:=json.Marshal(user)
+	if ur.Redis!=nil{
+		userdata,err:=json.Marshal(user)
 	if err!=nil{
 		return err
 	}
 	ur.Redis.Set(c,user.Id.String(),userdata,time.Hour*24)
+	}
 	return nil
 } 
 

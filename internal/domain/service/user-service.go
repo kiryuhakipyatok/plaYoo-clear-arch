@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"test/internal/domain/entity"
-	"test/internal/domain/repository"
+	"playoo/internal/domain/entity"
+	"playoo/internal/domain/repository"
 )
 
 type UserService interface {

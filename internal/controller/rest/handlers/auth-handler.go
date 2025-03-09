@@ -1,69 +1,76 @@
 package handlers
 
 import (
-	"test/internal/domain/service"
+	"os"
+	"playoo/internal/domain/service"
+	"playoo/internal/dto"
+	e "playoo/pkg/errors"
 	"time"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"os"
-	// "github.com/joho/godotenv"
-	"log"
+	"github.com/sirupsen/logrus"
 )
+
 
 type AuthHandler struct{
 	AuthService service.AuthService
+	Validator 	*validator.Validate
+	Logger 		*logrus.Logger
 }
 
-func NewAuthHandler(authService service.AuthService) AuthHandler{
+func NewAuthHandler(authService service.AuthService,validator *validator.Validate,logger *logrus.Logger) AuthHandler{
 	return AuthHandler{
 		AuthService: authService,
+		Validator: validator,
+		Logger: logger,
 	}
 }
 
 func (ah AuthHandler) Register(c *fiber.Ctx) error{
 	ctx:=c.Context()
-	var request struct{
-		Login 		string 	`json:"login"`
-		Telegram 	string 	`json:"telegram"`
-		Password 	string 	`json:"password"`
-	}
+	request:=dto.RegisterRequest{}
 	if err:=c.BodyParser(&request);err!=nil{
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"error":"bad request" + err.Error(),
-		})
+		return e.ErrorParse(c,ah.Logger,"request",err)
+	}
+	if err:=ah.Validator.Struct(request);err!=nil{
+		return e.FailedToValidate(c,ah.Logger,err)
 	}
 	user,err:=ah.AuthService.Register(ctx,request.Login,request.Telegram,request.Password)
 	if err!=nil{
+		ah.Logger.WithError(err).Error("failed register")
 		c.Status(fiber.StatusNotFound)
 		return c.JSON(fiber.Map{
-			"error":"failed register" + err.Error(),
+			"error":"failed register: " + err.Error(),
 		})
 	}
-	return c.JSON(user)
+	ah.Logger.Infof("user registered: %v",user)
+	respone:=dto.RegisterResponse{
+		Id: user.Id,
+		Login: user.Login,
+		Telegram: user.Telegram,
+	}
+	return c.JSON(respone)
 }
 
 func (ah AuthHandler) Login(c *fiber.Ctx) error{
 	ctx:=c.Context()
 
-	var request struct{
-		Login 		string 	`json:"login"`
-		Password 	string 	`json:"password"`
-	}
+	request:=dto.LoginRequest{}
 
 	if err:=c.BodyParser(&request);err!=nil{
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
-			"error":"bad request" + err.Error(),
-		})
+		return e.ErrorParse(c,ah.Logger,"request",err)
 	}
-
+	if err:=ah.Validator.Struct(request);err!=nil{
+		return e.FailedToValidate(c,ah.Logger,err)
+	}
 	token,err:=ah.AuthService.GetTokenForLogin(ctx,request.Login,request.Password)
 
 	if err != nil{
+		ah.Logger.WithError(err).Error("failed login")
 		c.Status(fiber.StatusNotFound)
 		return c.JSON(fiber.Map{
-			"error":"failed login" + err.Error(),
+			"error":"failed login: " + err.Error(),
 		})
 	}
 
@@ -75,6 +82,8 @@ func (ah AuthHandler) Login(c *fiber.Ctx) error{
 	}
 
 	c.Cookie(&cookie)
+
+	ah.Logger.Infof("user logined: %v", token)
 
 	return c.JSON(fiber.Map{
 		"message":"success",
@@ -95,12 +104,9 @@ func (ah AuthHandler) Logout(c *fiber.Ctx) error{
 }
 
 func (ah AuthHandler) GetLoggedUser(c *fiber.Ctx) error{
-	// if err := godotenv.Load("../../.env");err != nil {
-    //     log.Fatalf("error loading .env file when start server: %v", err.Error())
-    // }
 	secret:=os.Getenv("SECRET")
 	if secret == ""{
-		log.Fatal("error secret .env value  is empty")
+		ah.Logger.Fatal("error secret .env value  is empty")
 	}
 	ctx:=c.Context()
 	cookie:=c.Cookies("jwt")
@@ -108,6 +114,7 @@ func (ah AuthHandler) GetLoggedUser(c *fiber.Ctx) error{
 		return []byte(secret),nil
 	})
 	if err!=nil{
+		ah.Logger.WithError(err).Info("unauthenticated")
 		c.Status(fiber.StatusUnauthorized)
 		return c.JSON(fiber.Map{
 			"error":"unauthenticated",
@@ -116,11 +123,11 @@ func (ah AuthHandler) GetLoggedUser(c *fiber.Ctx) error{
 	claims:=token.Claims.(*jwt.StandardClaims)
 	user,err:=ah.AuthService.GetUserByClaims(ctx,claims.Issuer)
 	if err!=nil{
-		c.Status(fiber.StatusNotFound)
-		return c.JSON(fiber.Map{
-			"error":"user not found",
-		})
+		return e.NotFound(c,ah.Logger,"user",err)
 	}
+
+	ah.Logger.Infof("logged in user: %v",user)
+
 	return c.JSON(user)
 }
 

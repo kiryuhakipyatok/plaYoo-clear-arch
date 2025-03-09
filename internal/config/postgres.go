@@ -3,9 +3,12 @@ package config
 import (
 	"fmt"
 	"log"
-	"test/internal/domain/entity"
+	"playoo/internal/domain/entity"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+
 	//"github.com/joho/godotenv"
 	"os"
 )
@@ -19,7 +22,9 @@ func ConnectToPostgres() (*gorm.DB,error){
 		host		= 	os.Getenv("PGHOST")
 	)
 	dsn:=fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Europe/Minsk",host,user,password,db,port)
-	connection,err:= gorm.Open(postgres.Open(dsn),&gorm.Config{})
+	connection,err:= gorm.Open(postgres.Open(dsn),&gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err!=nil{
 		return nil,err
 	}
