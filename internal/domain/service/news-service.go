@@ -30,7 +30,7 @@ func NewNewsService(newsRepository repository.NewsRepository) NewsService{
 	}
 }
 
-func (nr *newsService) CreateNews(c context.Context, title,body,link string,picture *multipart.FileHeader) (*entity.News,error){
+func (nr newsService) CreateNews(c context.Context, title,body,link string,picture *multipart.FileHeader) (*entity.News,error){
 	news:=entity.News{
 		Id:uuid.New(),
 		Title: title,
@@ -80,7 +80,7 @@ func (nr *newsService) CreateNews(c context.Context, title,body,link string,pict
 	return &news,nil
 }
 
-func (nr *newsService) GetById(c context.Context, id string) (*entity.News, error){
+func (nr newsService) GetById(c context.Context, id string) (*entity.News, error){
 	news,err:=nr.NewsRepository.FindById(c,id)
 	if err!=nil{
 		return nil,err
@@ -88,7 +88,7 @@ func (nr *newsService) GetById(c context.Context, id string) (*entity.News, erro
 	return news,nil
 }
 
-func (nr *newsService) GetByAmount(c context.Context, amount int) ([]entity.News,error){
+func (nr newsService) GetByAmount(c context.Context, amount int) ([]entity.News,error){
 	somenews,err:=nr.NewsRepository.FindByAmount(c,amount)
 	if err!=nil{
 		return nil,err

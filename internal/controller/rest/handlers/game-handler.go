@@ -10,7 +10,7 @@ import (
 )
 
 type GameHandler struct{
-	GameService service.GameService
+	GameService  service.GameService
 	Validator 	*validator.Validate
 	Logger 		*logrus.Logger
 }
@@ -23,7 +23,7 @@ func NewGameHandler(gameService service.GameService,validator *validator.Validat
 	}
 }
 
-func (gh GameHandler) AddGameToUser(c *fiber.Ctx) error{
+func (gh *GameHandler) AddGameToUser(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	game:=c.Query("game")
 	id:=c.Query("id")
@@ -40,7 +40,7 @@ func (gh GameHandler) AddGameToUser(c *fiber.Ctx) error{
 	})
 }
 
-func (gh GameHandler) GetGameByName(c *fiber.Ctx) error{
+func (gh *GameHandler) GetGameByName(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	name:=c.Query("game")
 	game,err:=gh.GameService.GetByName(ctx,name)
@@ -51,7 +51,7 @@ func (gh GameHandler) GetGameByName(c *fiber.Ctx) error{
 	return c.JSON(game)
 }
 
-func (gh GameHandler) GetGamesByAmount(c *fiber.Ctx) error{
+func (gh *GameHandler) GetGamesByAmount(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	a:=c.Query("game")
 	amount,err:=strconv.Atoi(a)

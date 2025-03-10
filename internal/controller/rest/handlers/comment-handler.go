@@ -4,16 +4,15 @@ import (
 	"playoo/internal/domain/service"
 	"playoo/internal/dto"
 	e "playoo/pkg/errors"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 )
 
 type CommentHandler struct{
-	CommentService service.CommentService
-	Validator 	*validator.Validate
-	Logger 		*logrus.Logger
+	CommentService 	 service.CommentService
+	Validator 		*validator.Validate
+	Logger 			*logrus.Logger
 }
 
 func NewCommentHandler(commentService service.CommentService,validator *validator.Validate,logger *logrus.Logger) CommentHandler{
@@ -24,7 +23,8 @@ func NewCommentHandler(commentService service.CommentService,validator *validato
 	}
 }
 
-func (ch CommentHandler) AddCommentToUser(c *fiber.Ctx) error{
+
+func (ch *CommentHandler) AddCommentToUser(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	request:=dto.UserCommentRequest{}
 	
@@ -43,7 +43,7 @@ func (ch CommentHandler) AddCommentToUser(c *fiber.Ctx) error{
 	return c.JSON(comment)
 }
 
-func (ch CommentHandler) AddCommentToEvent(c *fiber.Ctx) error{
+func (ch *CommentHandler) AddCommentToEvent(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	request:=dto.EventCommentRequest{}
 	
@@ -61,7 +61,7 @@ func (ch CommentHandler) AddCommentToEvent(c *fiber.Ctx) error{
 	return c.JSON(comment)
 }
 
-func (ch CommentHandler) AddCommentToNews(c *fiber.Ctx) error{
+func (ch *CommentHandler) AddCommentToNews(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	request:=dto.NewsCommentRequest{}
 	

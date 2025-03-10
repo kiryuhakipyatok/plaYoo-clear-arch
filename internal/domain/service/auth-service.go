@@ -29,7 +29,7 @@ func NewAuthService(userRepository repository.UserRepository) AuthService{
 	}
 }
 
-func (as *authService) Register(c context.Context, login,tg,password string) (*entity.User, error){
+func (as authService) Register(c context.Context, login,tg,password string) (*entity.User, error){
 	if as.UserRepository.ExistByLoginOrTg(c,login,tg){
 		return nil,errors.New("user with same login or tg alredy exists")
 	}
@@ -49,7 +49,7 @@ func (as *authService) Register(c context.Context, login,tg,password string) (*e
 	return &user,nil
 }
 
-func (as *authService) GetTokenForLogin(c context.Context, login,password string) (string,error){
+func (as authService) GetTokenForLogin(c context.Context, login,password string) (string,error){
 	secret:=os.Getenv("SECRET")
 	if secret == ""{
 		log.Fatal("error secret .env value  is empty")
@@ -72,7 +72,7 @@ func (as *authService) GetTokenForLogin(c context.Context, login,password string
 	return token,nil
 }
 
-func (as *authService) GetUserByClaims(c context.Context, claims string) (*entity.User,error){
+func (as authService) GetUserByClaims(c context.Context, claims string) (*entity.User,error){
 	user,err:=as.UserRepository.FindById(c,claims)
 	if err!=nil{
 		return nil,err

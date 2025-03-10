@@ -11,9 +11,9 @@ import (
 )
 
 type EventHandler struct{
-	EventService service.EventService
-	Validator 	*validator.Validate
-	Logger 		*logrus.Logger
+	EventService	 service.EventService
+	Validator 		*validator.Validate
+	Logger 			*logrus.Logger
 }
 
 func NewEventHandler(eventService service.EventService,validator *validator.Validate,logger *logrus.Logger) EventHandler{
@@ -24,7 +24,7 @@ func NewEventHandler(eventService service.EventService,validator *validator.Vali
 	}
 }
 
-func (eh EventHandler) CreateEvent(c *fiber.Ctx) error{
+func (eh *EventHandler) CreateEvent(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	request:=dto.CreateEventRequest{}
 	
@@ -50,7 +50,7 @@ func (eh EventHandler) CreateEvent(c *fiber.Ctx) error{
 	return c.JSON(response) 
 }
 
-func (eh EventHandler) GetEventById(c *fiber.Ctx) error{
+func (eh *EventHandler) GetEventById(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	id:=c.Params("id")
 	event,err:=eh.EventService.GetById(ctx,id)
@@ -61,7 +61,7 @@ func (eh EventHandler) GetEventById(c *fiber.Ctx) error{
 	return c.JSON(event)
 }
 
-func (eh EventHandler) GetEventByAmount(c *fiber.Ctx) error{
+func (eh *EventHandler) GetEventByAmount(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	a:=c.Params("amount")
 	amount,err:=strconv.Atoi(a)

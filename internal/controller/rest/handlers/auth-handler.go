@@ -14,7 +14,7 @@ import (
 
 
 type AuthHandler struct{
-	AuthService service.AuthService
+	AuthService  service.AuthService
 	Validator 	*validator.Validate
 	Logger 		*logrus.Logger
 }
@@ -27,7 +27,7 @@ func NewAuthHandler(authService service.AuthService,validator *validator.Validat
 	}
 }
 
-func (ah AuthHandler) Register(c *fiber.Ctx) error{
+func (ah *AuthHandler) Register(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	request:=dto.RegisterRequest{}
 	if err:=c.BodyParser(&request);err!=nil{
@@ -53,7 +53,7 @@ func (ah AuthHandler) Register(c *fiber.Ctx) error{
 	return c.JSON(respone)
 }
 
-func (ah AuthHandler) Login(c *fiber.Ctx) error{
+func (ah *AuthHandler) Login(c *fiber.Ctx) error{
 	ctx:=c.Context()
 
 	request:=dto.LoginRequest{}
@@ -90,7 +90,7 @@ func (ah AuthHandler) Login(c *fiber.Ctx) error{
 	})
 }
 
-func (ah AuthHandler) Logout(c *fiber.Ctx) error{
+func (ah *AuthHandler) Logout(c *fiber.Ctx) error{
 	cookie:=fiber.Cookie{
 		Name:"jwt",
 		Value: "",
@@ -103,7 +103,7 @@ func (ah AuthHandler) Logout(c *fiber.Ctx) error{
 	})
 }
 
-func (ah AuthHandler) GetLoggedUser(c *fiber.Ctx) error{
+func (ah *AuthHandler) GetLoggedUser(c *fiber.Ctx) error{
 	secret:=os.Getenv("SECRET")
 	if secret == ""{
 		ah.Logger.Fatal("error secret .env value  is empty")

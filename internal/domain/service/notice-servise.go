@@ -36,7 +36,7 @@ func NewNoticeService(
 	}
 }
 
-func (ns *noticeService) CreateNotice(c context.Context,event entity.Event,msg string) error{
+func (ns noticeService) CreateNotice(c context.Context,event entity.Event,msg string) error{
 	for _,id:=range event.Members{
 		user,err:=ns.UserRepository.FindById(c,id)
 		if err!=nil{
@@ -58,7 +58,7 @@ func (ns *noticeService) CreateNotice(c context.Context,event entity.Event,msg s
 	return nil
 }
 
-func (ns *noticeService) DeleteNotice(c context.Context,id,nid string) error{
+func (ns noticeService) DeleteNotice(c context.Context,id,nid string) error{
 	notice,err:=ns.NoticeRepository.FindById(c,nid)
 	if err!=nil{
 		return err
@@ -83,7 +83,7 @@ func (ns *noticeService) DeleteNotice(c context.Context,id,nid string) error{
 	return nil
 }
 
-func (ns *noticeService) GetNoticeByAmount(c context.Context, id string,amount int) ([]entity.Notice,error){
+func (ns noticeService) GetNoticeByAmount(c context.Context, id string,amount int) ([]entity.Notice,error){
 	user,err:=ns.UserRepository.FindById(c,id)
 	if err!=nil{
 		return nil,err
@@ -100,7 +100,7 @@ func (ns *noticeService) GetNoticeByAmount(c context.Context, id string,amount i
 	return notifications,nil
 }
 
-func (ns *noticeService) DeleteAllNotifications(c context.Context,id string) error{
+func (ns noticeService) DeleteAllNotifications(c context.Context,id string) error{
 	user,err:=ns.UserRepository.FindById(c,id)
 	if err!=nil{
 		return err

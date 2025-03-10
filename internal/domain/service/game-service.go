@@ -25,7 +25,7 @@ func NewGameService(gameRepository repository.GameRepository,userRepository repo
 	}
 }
 
-func (gs *gameService) AddGameToUser(c context.Context, name,id string) error{
+func (gs gameService) AddGameToUser(c context.Context, name,id string) error{
 	// TODO TRANSACTIONS
 	game,err:=gs.GameRepository.FindByName(c,name)
 	if err!=nil{
@@ -45,14 +45,14 @@ func (gs *gameService) AddGameToUser(c context.Context, name,id string) error{
 	}
 	return nil
 }
-func (gs *gameService) GetByName(c context.Context, name string) (*entity.Game,error){
+func (gs gameService) GetByName(c context.Context, name string) (*entity.Game,error){
 	game,err:=gs.GameRepository.FindByName(c,name)
 	if err!=nil{
 		return nil,err
 	}
 	return game,nil
 }
-func (gs *gameService) GetByAmount(c context.Context, amount int) ([]entity.Game,error){
+func (gs gameService) GetByAmount(c context.Context, amount int) ([]entity.Game,error){
 	games,err:=gs.GameRepository.FindByAmount(c,amount)
 	if err!=nil{
 		return nil,err

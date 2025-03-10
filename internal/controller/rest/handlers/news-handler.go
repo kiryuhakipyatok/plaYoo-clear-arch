@@ -12,7 +12,7 @@ import (
 )
 
 type NewsHandler struct{
-	NewsService service.NewsService
+	NewsService  service.NewsService
 	Validator 	*validator.Validate
 	Logger 		*logrus.Logger
 }
@@ -25,7 +25,7 @@ func NewNewsHandler(newsService service.NewsService,validator *validator.Validat
 	}
 }
 
-func (nh NewsHandler) CreateNews(c *fiber.Ctx) error{
+func (nh *NewsHandler) CreateNews(c *fiber.Ctx) error{
 	ctx:=c.Context()
 
 	request:=dto.CreateNewsRequest{}
@@ -55,7 +55,7 @@ func (nh NewsHandler) CreateNews(c *fiber.Ctx) error{
 	return c.JSON(response)
 }
 
-func (nh NewsHandler) GetNewsById(c *fiber.Ctx) error{
+func (nh *NewsHandler) GetNewsById(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	id:=c.Params("id")
 	news,err:=nh.NewsService.GetById(ctx,id)
@@ -66,7 +66,7 @@ func (nh NewsHandler) GetNewsById(c *fiber.Ctx) error{
 	return c.JSON(news)
 }
 
-func (nh NewsHandler) GetNewsByAmount(c *fiber.Ctx) error{
+func (nh *NewsHandler) GetNewsByAmount(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	a:=c.Params("amount")
 	amount,err:=strconv.Atoi(a)

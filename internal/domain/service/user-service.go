@@ -22,16 +22,16 @@ func NewUserService(userRepository repository.UserRepository) UserService{
 	}
 }	
 
-func (us *userService) GetById(c context.Context, id string) (*entity.User, error){
+func (us userService) GetById(c context.Context, id string) (*entity.User, error){
 	return us.UserRepository.FindById(c,id)
 }
 
-func (us *userService) GetByAmount(c context.Context, amount int) ([]entity.User,error){
+func (us userService) GetByAmount(c context.Context, amount int) ([]entity.User,error){
 	return us.UserRepository.FindByAmount(c,amount)
 }
 
 
-func (ur *userService) UpdateEvents(c context.Context, id,eventid string) error{
+func (ur userService) UpdateEvents(c context.Context, id,eventid string) error{
 	user,err:=ur.UserRepository.FindById(c,id)
 	if err!=nil{
 		return err

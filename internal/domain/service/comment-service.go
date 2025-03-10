@@ -34,7 +34,7 @@ func NewCommentService(
 		}
 }
 
-func (nc *commentService) AddCommentToUser(c context.Context,id,rid,body string) (*entity.Comment,error){
+func (nc commentService) AddCommentToUser(c context.Context,id,rid,body string) (*entity.Comment,error){
 	user,err:=nc.UserRepository.FindById(c,id)
 	if err!=nil{
 		return nil,err
@@ -62,7 +62,7 @@ func (nc *commentService) AddCommentToUser(c context.Context,id,rid,body string)
 	return &comment,nil
 }
 
-func (nc *commentService) AddCommentToEvent(c context.Context,id,rid,body string) (*entity.Comment,error){
+func (nc commentService) AddCommentToEvent(c context.Context,id,rid,body string) (*entity.Comment,error){
 	user,err:=nc.UserRepository.FindById(c,id)
 	if err!=nil{
 		return nil,err
@@ -90,7 +90,7 @@ func (nc *commentService) AddCommentToEvent(c context.Context,id,rid,body string
 	return &comment,nil
 }
 
-func (nc *commentService) AddCommentToNews(c context.Context,id,rid,body string) (*entity.Comment,error){
+func (nc commentService) AddCommentToNews(c context.Context,id,rid,body string) (*entity.Comment,error){
 	user,err:=nc.UserRepository.FindById(c,id)
 	if err!=nil{
 		return nil,err
