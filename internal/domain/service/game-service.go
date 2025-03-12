@@ -10,12 +10,12 @@ type GameService interface {
 	AddGameToUser(c context.Context, name,id string) error
 	GetByName(c context.Context, name string) (*entity.Game,error)
 	GetByAmount(c context.Context, amount int) ([]entity.Game,error)
+	DeleteGame(c context.Context, id,name string) error
 }
 
 type gameService struct {
 	GameRepository 			repository.GameRepository
 	UserRepository 			repository.UserRepository
-	//TransactionRepository 	repository.TransactionRepository
 }
 
 func NewGameService(gameRepository repository.GameRepository,userRepository repository.UserRepository) GameService{
@@ -26,7 +26,6 @@ func NewGameService(gameRepository repository.GameRepository,userRepository repo
 }
 
 func (gs gameService) AddGameToUser(c context.Context, name,id string) error{
-	// TODO TRANSACTIONS
 	game,err:=gs.GameRepository.FindByName(c,name)
 	if err!=nil{
 		return err
@@ -58,4 +57,26 @@ func (gs gameService) GetByAmount(c context.Context, amount int) ([]entity.Game,
 		return nil,err
 	}
 	return games,nil
+}
+
+func (gs gameService) DeleteGame(c context.Context, id,name string) error{
+	game,err:=gs.GameRepository.FindByName(c,name)
+	if err!=nil{
+		return err
+	}
+	user,err:=gs.UserRepository.FindById(c,id)
+	if err!=nil{
+		return err
+	}
+	updateGames:=make([]string,0,len(user.Games))
+	for _, g := range user.Games {
+		if g != game.Name {
+			updateGames = append(updateGames, g)
+		}
+	}
+	user.Games = updateGames
+	if err:=gs.UserRepository.Save(c,*user);err!=nil{
+		return err
+	}
+	return nil
 }

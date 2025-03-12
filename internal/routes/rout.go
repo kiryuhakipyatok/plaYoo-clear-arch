@@ -6,13 +6,12 @@ import (
 )
 
 type RoutConfig struct {
-	App 		 *fiber.App
-	UserHandler  *handlers.UserHandler
-	AuthHandler  *handlers.AuthHandler
-	GameHandler  *handlers.GameHandler
-	EventHandler *handlers.EventHandler
-	NewsHandler  *handlers.NewsHandler
-	CommentHandler *handlers.CommentHandler
+	App 		  *fiber.App
+	UserHandler   *handlers.UserHandler
+	AuthHandler   *handlers.AuthHandler
+	GameHandler   *handlers.GameHandler
+	EventHandler  *handlers.EventHandler
+	NewsHandler   *handlers.NewsHandler
 	NoticeHandler *handlers.NoticeHandler
 }
 
@@ -21,14 +20,24 @@ func (cfg *RoutConfig) Setup(){
 	cfg.SetupAuthRoute()
 	cfg.SetupGameRoute()
 	cfg.SetupNewsRoute()
-	cfg.SetupCommentRoute()
 	cfg.SetupEventRoute()
 	cfg.SetupNotificationsRoute()
 }
 
 func (cfg *RoutConfig) SetupUserRoute(){
-	cfg.App.Get("/api/users/:id",cfg.UserHandler.GetUserById)
-	cfg.App.Get("/api/users/:amount",cfg.UserHandler.GetUsersByAmount)
+	cfg.App.Get("/api/users/comments", cfg.UserHandler.GetComments)  
+
+	cfg.App.Get("/api/users/:id", cfg.UserHandler.GetUserById)      
+	cfg.App.Get("/api/users", cfg.UserHandler.GetUsersByAmount)     
+
+	cfg.App.Patch("/api/users/avatar/:id", cfg.UserHandler.UploadAvatar)
+	cfg.App.Patch("/api/users/discord", cfg.UserHandler.RecordDiscord)
+	cfg.App.Patch("/api/users/commens", cfg.UserHandler.AddComment)
+	cfg.App.Patch("/api/users/follow", cfg.UserHandler.Follow)
+	cfg.App.Patch("/api/users/unfollow", cfg.UserHandler.Unfollow)
+	cfg.App.Patch("/api/users/rating", cfg.UserHandler.EditRating)
+
+	cfg.App.Delete("/api/users/avatar/:id", cfg.UserHandler.DeleteAvatar)
 }
 
 func (cfg *RoutConfig) SetupAuthRoute(){
@@ -40,29 +49,33 @@ func (cfg *RoutConfig) SetupAuthRoute(){
 }
 
 func (cfg *RoutConfig) SetupGameRoute(){
-	cfg.App.Post("/api/add-game",cfg.GameHandler.AddGameToUser)
+	cfg.App.Patch("/api/games",cfg.GameHandler.AddGameToUser)
+
+	cfg.App.Delete("/api/games",cfg.GameHandler.DeleteGame)
 
 	cfg.App.Get("/api/games",cfg.GameHandler.GetGameByName)
 }
 
 func (cfg *RoutConfig) SetupEventRoute(){
-	cfg.App.Post("/api/add-event",cfg.EventHandler.CreateEvent)
+	cfg.App.Post("/api/events",cfg.EventHandler.CreateEvent)
 	
+	cfg.App.Patch("/api/events/comments",cfg.EventHandler.AddComment)
+	cfg.App.Patch("/api/events/join",cfg.EventHandler.Join)
+	cfg.App.Patch("/api/events/unjoin",cfg.EventHandler.Unjoin)
+
 	cfg.App.Get("/api/events/:id",cfg.EventHandler.GetEventById)
-	cfg.App.Get("/api/events/:amount",cfg.EventHandler.GetEventByAmount)
+	cfg.App.Get("/api/events",cfg.EventHandler.GetEventByAmount)
+	cfg.App.Get("/api/events/comments", cfg.EventHandler.GetComments)  
 }
 
 func (cfg *RoutConfig) SetupNewsRoute(){
-	cfg.App.Post("/admin/add-news",cfg.NewsHandler.CreateNews)
+	cfg.App.Post("/api/news",cfg.NewsHandler.CreateNews)
 	
-	cfg.App.Get("/api/news/:id",cfg.NewsHandler.GetNewsById)
-	cfg.App.Get("/api/news/:amount",cfg.NewsHandler.GetNewsByAmount)
-}
+	cfg.App.Patch("/api/news/comments",cfg.NewsHandler.AddComment)
 
-func (cfg *RoutConfig) SetupCommentRoute(){
-	cfg.App.Post("/api/add-comment-to-user",cfg.CommentHandler.AddCommentToUser)
-	cfg.App.Post("/api/add-comment-to-event",cfg.CommentHandler.AddCommentToEvent)
-	cfg.App.Post("/api/add-comment-to-news",cfg.CommentHandler.AddCommentToNews)
+	cfg.App.Get("/api/news/:id",cfg.NewsHandler.GetNewsById)
+	cfg.App.Get("/api/news",cfg.NewsHandler.GetNewsByAmount)
+	cfg.App.Get("/api/news/comments", cfg.NewsHandler.GetComments)  
 }
 
 func (cfg *RoutConfig) SetupNotificationsRoute(){

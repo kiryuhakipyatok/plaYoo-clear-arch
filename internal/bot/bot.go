@@ -27,8 +27,10 @@ func CreateBot(stop chan struct{},userRepository repository.UserRepository) *Bot
 	Bot:=Bot{bot:bot,UserRepository: userRepository}
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go Bot.listenForUpdates(stop)
-	defer wg.Done()
+	go func(){
+		defer wg.Done()
+		Bot.listenForUpdates(stop)
+	}()
 	return &Bot
 }
 

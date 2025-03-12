@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 	"github.com/joho/godotenv"
+	e "playoo/pkg/errors"
 )
 
 func StartApp() {
@@ -44,20 +45,22 @@ func StartApp() {
 			}
 		}
 	}()
-
-	logger:=config.NewLogger()
-	validator:=config.NewValidator()
-
 	app:=config.CreateServer()
 	var (
 		port = os.Getenv("PORT")
 	)
+	logger:=config.NewLogger()
+	validator:=config.NewValidator()
+	errorhandler:=e.NewErrorHandler(logger)
+	
+	
 	cfg:=&config.BootstrapConfig{
 		App: app,
 		Postgres: postgres,
 		Redis: redis,
 		Logger: logger,
 		Validator: validator,
+		ErrorHandler: errorhandler,
 	}
 	quit:=make(chan os.Signal,1)
 	signal.Notify(quit,syscall.SIGINT,syscall.SIGTERM)
@@ -67,14 +70,14 @@ func StartApp() {
 	wg.Add(3)
 	go func() {
 		defer wg.Done()
-		if err := app.Listen("0.0.0.0"+port); err != nil {
+		if err := app.Listen("0.0.0.0:"+port); err != nil {
 			log.Fatalf("failed to start server: %v", err)
 		}
 	}()
 	botChan := make(chan *bot.Bot)
 	go func(){
 		defer wg.Done()
-		bot:=config.StartBot(postgres,redis,stop)
+	bot:=config.StartBot(postgres,redis,stop)
 		if bot == nil {
 			log.Println("failed to create bot")
 			return

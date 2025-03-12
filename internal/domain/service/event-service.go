@@ -15,6 +15,8 @@ type EventService interface {
 	FindUpcoming(c context.Context, time time.Time) ([]entity.Event,error)
 	Save(c context.Context ,event entity.Event) error
 	Delete(c context.Context, event entity.Event) error
+	Join(c context.Context,id,eid string) error
+	Unjoin(c context.Context,id,eid string) error
 }
 
 type eventService struct {
@@ -102,6 +104,58 @@ func (es eventService) Save(c context.Context ,event entity.Event) error{
 
 func (es eventService) Delete(c context.Context, event entity.Event) error{
 	if err:=es.EventRepository.Delete(c,event);err!=nil{
+		return err
+	}
+	return nil
+}
+
+func(es eventService) Join(c context.Context,id,eid string) error{
+	user,err:=es.UserRepository.FindById(c,id)
+	if err!=nil{
+		return err
+	}
+	event,err:=es.EventRepository.FindById(c,eid)
+	if err!=nil{
+		return err
+	}
+	user.Events=append(user.Events, event.Id.String())
+	event.Members=append(event.Members, user.Id.String())
+	if err:=es.UserRepository.Save(c,*user);err!=nil{
+		return err
+	}
+	if err:=es.EventRepository.Save(c,*event);err!=nil{
+		return err
+	}
+	return nil
+}
+
+func(es eventService) Unjoin(c context.Context,id,eid string) error{
+	user,err:=es.UserRepository.FindById(c,id)
+	if err!=nil{
+		return err
+	}
+	event,err:=es.EventRepository.FindById(c,eid)
+	if err!=nil{
+		return err
+	}
+	updateEvents := make([]string, 0, len(user.Events))
+	for _, e := range user.Events {
+		if e != event.Id.String() {
+			updateEvents = append(updateEvents, e)
+		}
+	}
+	updateMembers:=make([]string, 0, len(event.Members))
+	for _, m := range event.Members {
+		if m != event.Id.String() {
+			updateMembers = append(updateMembers, m)
+		}
+	}
+	user.Events = updateEvents
+	event.Members = updateMembers
+	if err:=es.UserRepository.Save(c,*user);err!=nil{
+		return err
+	}
+	if err:=es.EventRepository.Save(c,*event);err!=nil{
 		return err
 	}
 	return nil

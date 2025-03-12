@@ -12,6 +12,7 @@ type CommentService interface {
 	AddCommentToUser(c context.Context,id,rid,body string) (*entity.Comment,error)
 	AddCommentToEvent(c context.Context,id,rid,body string) (*entity.Comment,error)
 	AddCommentToNews(c context.Context,id,rid,body string) (*entity.Comment,error)
+	GetComments(c context.Context,id string,amount int) ([]entity.Comment,error)
 }
 
 type commentService struct {
@@ -34,12 +35,12 @@ func NewCommentService(
 		}
 }
 
-func (nc commentService) AddCommentToUser(c context.Context,id,rid,body string) (*entity.Comment,error){
-	user,err:=nc.UserRepository.FindById(c,id)
+func (cs commentService) AddCommentToUser(c context.Context,id,rid,body string) (*entity.Comment,error){
+	user,err:=cs.UserRepository.FindById(c,id)
 	if err!=nil{
 		return nil,err
 	}
-	reciever,err:=nc.UserRepository.FindById(c,rid)
+	reciever,err:=cs.UserRepository.FindById(c,rid)
 	if err!=nil{
 		return nil,err
 	}
@@ -52,22 +53,22 @@ func (nc commentService) AddCommentToUser(c context.Context,id,rid,body string) 
 		Receiver: reciever.Id,
 		Time: time.Now(),
 	}
-	if err:=nc.CommentRepository.Create(c,comment);err!=nil{
+	if err:=cs.CommentRepository.Create(c,comment);err!=nil{
 		return nil,err
 	}
 	reciever.Comments=append(reciever.Comments, comment.Id.String())
-	if err:=nc.UserRepository.Save(c,*reciever);err!=nil{
+	if err:=cs.UserRepository.Save(c,*reciever);err!=nil{
 		return nil,err
 	}
 	return &comment,nil
 }
 
-func (nc commentService) AddCommentToEvent(c context.Context,id,rid,body string) (*entity.Comment,error){
-	user,err:=nc.UserRepository.FindById(c,id)
+func (cs commentService) AddCommentToEvent(c context.Context,id,rid,body string) (*entity.Comment,error){
+	user,err:=cs.UserRepository.FindById(c,id)
 	if err!=nil{
 		return nil,err
 	}
-	event,err:=nc.EventRepository.FindById(c,rid)
+	event,err:=cs.EventRepository.FindById(c,rid)
 	if err!=nil{
 		return nil,err
 	}
@@ -80,22 +81,22 @@ func (nc commentService) AddCommentToEvent(c context.Context,id,rid,body string)
 		Receiver: event.Id,
 		Time: time.Now(),
 	}
-	if err:=nc.CommentRepository.Create(c,comment);err!=nil{
+	if err:=cs.CommentRepository.Create(c,comment);err!=nil{
 		return nil,err
 	}
 	event.Comments=append(event.Comments, comment.Id.String())
-	if err:=nc.EventRepository.Save(c,*event);err!=nil{
+	if err:=cs.EventRepository.Save(c,*event);err!=nil{
 		return nil,err
 	}
 	return &comment,nil
 }
 
-func (nc commentService) AddCommentToNews(c context.Context,id,rid,body string) (*entity.Comment,error){
-	user,err:=nc.UserRepository.FindById(c,id)
+func (cs commentService) AddCommentToNews(c context.Context,id,rid,body string) (*entity.Comment,error){
+	user,err:=cs.UserRepository.FindById(c,id)
 	if err!=nil{
 		return nil,err
 	}
-	news,err:=nc.NewsRepository.FindById(c,rid)
+	news,err:=cs.NewsRepository.FindById(c,rid)
 	if err!=nil{
 		return nil,err
 	}
@@ -108,12 +109,21 @@ func (nc commentService) AddCommentToNews(c context.Context,id,rid,body string) 
 		Receiver: news.Id,
 		Time: time.Now(),
 	}
-	if err:=nc.CommentRepository.Create(c,comment);err!=nil{
+	if err:=cs.CommentRepository.Create(c,comment);err!=nil{
 		return nil,err
 	}
 	news.Comments=append(news.Comments, comment.Id.String())
-	if err:=nc.NewsRepository.Save(c,*news);err!=nil{
+	if err:=cs.NewsRepository.Save(c,*news);err!=nil{
 		return nil,err
 	}
 	return &comment,nil
 }
+
+func (cs commentService) GetComments(c context.Context,id string,amount int) ([]entity.Comment,error){
+	comments,err:=cs.CommentRepository.FindById(c,id,amount)
+	if err!=nil{
+		return nil,err
+	}
+	return comments,nil
+}
+

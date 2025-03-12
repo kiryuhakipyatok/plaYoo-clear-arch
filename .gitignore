@@ -20,7 +20,7 @@ tmp/
 
 /files
 
-
+logrus.log
 .env
 
 main

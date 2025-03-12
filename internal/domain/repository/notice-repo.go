@@ -10,7 +10,6 @@ type NoticeRepository interface{
 	Create(c context.Context,notification entity.Notice) error
 	Delete(c context.Context, notification entity.Notice) error
 	FindById(c context.Context, id string) (*entity.Notice,error)
-	FindByAmount(c context.Context, amount int) ([]entity.Notice,error)
 }
 
 type noticeRepository struct{
@@ -45,10 +44,3 @@ func (nr *noticeRepository) FindById(c context.Context, id string) (*entity.Noti
 	return &notification,nil
 }
 
-func (nr *noticeRepository) FindByAmount(c context.Context, amount int) ([]entity.Notice,error){
-	notifications:=[]entity.Notice{}
-	if err:=nr.DB.WithContext(c).Limit(amount).Find(&notifications).Error;err!=nil{
-		return nil,err
-	}
-	return notifications,nil
-}

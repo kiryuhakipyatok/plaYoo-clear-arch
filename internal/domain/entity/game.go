@@ -17,7 +17,7 @@ func (g *Game) CalculateRating() {
     g.Rating = float64(g.NumberOfPlayers+g.NumberOfEvents) / 2.0
 }
 
-func (g *Game) BeforeUpdate(tx *gorm.DB) (err error) {
+func (g *Game) BeforeUpdate(db *gorm.DB) (err error) {
     g.CalculateRating()
     return
 }

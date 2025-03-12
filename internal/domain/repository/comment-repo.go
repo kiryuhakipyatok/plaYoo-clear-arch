@@ -8,6 +8,7 @@ import (
 
 type CommentRepository interface {
 	Create(c context.Context, comment entity.Comment) error
+	FindById(c context.Context, id string, amount int) ([]entity.Comment,error)
 }
 
 type commentRepository struct {
@@ -27,3 +28,10 @@ func (cr *commentRepository) Create(c context.Context, comment entity.Comment) e
 	return nil
 }
 
+func (cr *commentRepository) FindById(c context.Context, id string, amount int) ([]entity.Comment,error){
+	comments:=[]entity.Comment{}
+	if err:=cr.DB.WithContext(c).Limit(amount).Where("receiver=?",id).Find(&comments).Error;err!=nil{
+		return nil,err
+	}
+	return comments,nil
+}

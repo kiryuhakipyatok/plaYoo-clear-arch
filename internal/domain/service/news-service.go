@@ -20,8 +20,8 @@ type NewsService interface {
 }
 
 type newsService struct {
-	NewsRepository repository.NewsRepository
-	UserRepository repository.UserRepository
+	NewsRepository 		repository.NewsRepository
+	CommentRepository 	repository.CommentRepository
 }
 
 func NewNewsService(newsRepository repository.NewsRepository) NewsService{
@@ -39,7 +39,6 @@ func (nr newsService) CreateNews(c context.Context, title,body,link string,pictu
 		Link: link,
 	}
 	uploadDir := "../../files/news-pictures"
-	// uploadDir := filepath.Join("files","news-pictures")
     if err := os.MkdirAll(uploadDir, 0755); err != nil {
 		return nil,err
 	}
@@ -48,13 +47,6 @@ func (nr newsService) CreateNews(c context.Context, title,body,link string,pictu
 	}
 	fileName := fmt.Sprintf("%s-news-picture%s", news.Id,filepath.Ext(picture.Filename))
     filepath := filepath.Join(uploadDir, fileName)
-	if _, err := os.Stat(news.Picture); err == nil {
-		if err := os.Remove(news.Picture); err != nil {
-			return nil,err
-        }
-	}
-	
-
     dst, err := os.Create(filepath)
 	if err != nil {
 		return nil,err
@@ -70,8 +62,12 @@ func (nr newsService) CreateNews(c context.Context, title,body,link string,pictu
 		return nil,err
 	}
 
+	var(
+		host = os.Getenv("HOST")
+		port = os.Getenv("PORT")
+	)
 
-	fileURL:=fmt.Sprintf("http://localhost:3333/files/news-pictures/%s",fileName)
+	fileURL:=fmt.Sprintf("http://%s:%s/files/news-pictures/%s",host,port,fileName)
 
 	news.Picture = fileURL
 	if err:=nr.NewsRepository.Create(c,news);err!=nil{
@@ -95,3 +91,4 @@ func (nr newsService) GetByAmount(c context.Context, amount int) ([]entity.News,
 	}
 	return somenews,nil
 }
+

@@ -16,13 +16,15 @@ import (
 type AuthHandler struct{
 	AuthService  service.AuthService
 	Validator 	*validator.Validate
+	ErrorHandler *e.ErrorHandler
 	Logger 		*logrus.Logger
 }
 
-func NewAuthHandler(authService service.AuthService,validator *validator.Validate,logger *logrus.Logger) AuthHandler{
+func NewAuthHandler(authService service.AuthService,validator *validator.Validate,logger *logrus.Logger,eh *e.ErrorHandler) AuthHandler{
 	return AuthHandler{
 		AuthService: authService,
 		Validator: validator,
+		ErrorHandler: eh,
 		Logger: logger,
 	}
 }
@@ -31,10 +33,10 @@ func (ah *AuthHandler) Register(c *fiber.Ctx) error{
 	ctx:=c.Context()
 	request:=dto.RegisterRequest{}
 	if err:=c.BodyParser(&request);err!=nil{
-		return e.ErrorParse(c,ah.Logger,"request",err)
+		return ah.ErrorHandler.ErrorParse(c,"request",err)
 	}
 	if err:=ah.Validator.Struct(request);err!=nil{
-		return e.FailedToValidate(c,ah.Logger,err)
+		return ah.ErrorHandler.FailedToValidate(c,err)
 	}
 	user,err:=ah.AuthService.Register(ctx,request.Login,request.Telegram,request.Password)
 	if err!=nil{
@@ -44,7 +46,7 @@ func (ah *AuthHandler) Register(c *fiber.Ctx) error{
 			"error":"failed register: " + err.Error(),
 		})
 	}
-	ah.Logger.Infof("user registered: %v",user)
+	ah.Logger.Infof("user registered: %s",user.Id)
 	respone:=dto.RegisterResponse{
 		Id: user.Id,
 		Login: user.Login,
@@ -59,10 +61,10 @@ func (ah *AuthHandler) Login(c *fiber.Ctx) error{
 	request:=dto.LoginRequest{}
 
 	if err:=c.BodyParser(&request);err!=nil{
-		return e.ErrorParse(c,ah.Logger,"request",err)
+		return ah.ErrorHandler.ErrorParse(c,"request",err)
 	}
 	if err:=ah.Validator.Struct(request);err!=nil{
-		return e.FailedToValidate(c,ah.Logger,err)
+		return ah.ErrorHandler.FailedToValidate(c,err)
 	}
 	token,err:=ah.AuthService.GetTokenForLogin(ctx,request.Login,request.Password)
 
@@ -83,7 +85,7 @@ func (ah *AuthHandler) Login(c *fiber.Ctx) error{
 
 	c.Cookie(&cookie)
 
-	ah.Logger.Infof("user logined: %v", token)
+	ah.Logger.Infof("user logined: %s", token)
 
 	return c.JSON(fiber.Map{
 		"message":"success",
@@ -123,10 +125,10 @@ func (ah *AuthHandler) GetLoggedUser(c *fiber.Ctx) error{
 	claims:=token.Claims.(*jwt.StandardClaims)
 	user,err:=ah.AuthService.GetUserByClaims(ctx,claims.Issuer)
 	if err!=nil{
-		return e.NotFound(c,ah.Logger,"user",err)
+		return ah.ErrorHandler.NotFound(c,"user",err)
 	}
 
-	ah.Logger.Infof("logged in user: %v",user)
+	ah.Logger.Infof("logged in user: %s",user.Id)
 
 	return c.JSON(user)
 }
