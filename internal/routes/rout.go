@@ -25,10 +25,6 @@ func (cfg *RoutConfig) Setup() {
 }
 
 func (cfg *RoutConfig) SetupUserRoute() {
-	cfg.App.Get("/api/users/comments", cfg.UserHandler.GetComments)
-	cfg.App.Get("/api/users/:id", cfg.UserHandler.GetUserById)
-	cfg.App.Get("/api/users", cfg.UserHandler.GetUsersByAmount)
-
 	cfg.App.Patch("/api/users/avatar/:id", cfg.UserHandler.UploadAvatar)
 	cfg.App.Patch("/api/users/discord", cfg.UserHandler.RecordDiscord)
 	cfg.App.Patch("/api/users/commens", cfg.UserHandler.AddComment)
@@ -37,6 +33,10 @@ func (cfg *RoutConfig) SetupUserRoute() {
 	cfg.App.Patch("/api/users/rating", cfg.UserHandler.EditRating)
 
 	cfg.App.Delete("/api/users/avatar/:id", cfg.UserHandler.DeleteAvatar)
+
+	cfg.App.Get("/api/users/comments", cfg.UserHandler.GetComments)
+	cfg.App.Get("/api/users/:id", cfg.UserHandler.GetUserById)
+	cfg.App.Get("/api/users", cfg.UserHandler.GetUsersByAmount)
 }
 
 func (cfg *RoutConfig) SetupAuthRoute() {
@@ -56,23 +56,25 @@ func (cfg *RoutConfig) SetupGameRoute() {
 }
 
 func (cfg *RoutConfig) SetupEventRoute() {
-	cfg.App.Get("/api/events/comments", cfg.EventHandler.GetComments)
-	cfg.App.Get("/api/events/:id", cfg.EventHandler.GetEventById)
-	cfg.App.Get("/api/events", cfg.EventHandler.GetEventByAmount)
-
 	cfg.App.Post("/api/events", cfg.EventHandler.CreateEvent)
+
 	cfg.App.Patch("/api/events/comments", cfg.EventHandler.AddComment)
 	cfg.App.Patch("/api/events/join", cfg.EventHandler.Join)
 	cfg.App.Patch("/api/events/unjoin", cfg.EventHandler.Unjoin)
+
+	cfg.App.Get("/api/events/comments", cfg.EventHandler.GetComments)
+	cfg.App.Get("/api/events/:id", cfg.EventHandler.GetEventById)
+	cfg.App.Get("/api/events", cfg.EventHandler.GetEventByAmount)
 }
 
 func (cfg *RoutConfig) SetupNewsRoute() {
+	cfg.App.Post("/api/news", cfg.NewsHandler.CreateNews)
+
+	cfg.App.Patch("/api/news/comments", cfg.NewsHandler.AddComment)
+
 	cfg.App.Get("/api/news/comments", cfg.NewsHandler.GetComments)
 	cfg.App.Get("/api/news/:id", cfg.NewsHandler.GetNewsById)
 	cfg.App.Get("/api/news", cfg.NewsHandler.GetNewsByAmount)
-
-	cfg.App.Post("/api/news", cfg.NewsHandler.CreateNews)
-	cfg.App.Patch("/api/news/comments", cfg.NewsHandler.AddComment)
 }
 
 func (cfg *RoutConfig) SetupNotificationsRoute() {
