@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 	"log"
 	"os"
 	"os/signal"
@@ -15,9 +15,9 @@ import (
 )
 
 func StartApp() {
-	if err := godotenv.Load("../../.env"); err != nil {
-		log.Fatalf("error loading .env file: %v", err.Error())
-	}
+	// if err := godotenv.Load("../../.env"); err != nil {
+	// 	log.Fatalf("error loading .env file: %v", err.Error())
+	// }
 	postgres, err := config.ConnectToPostgres()
 	if err != nil {
 		log.Fatalf("error to connect to postgres: %v", err)
