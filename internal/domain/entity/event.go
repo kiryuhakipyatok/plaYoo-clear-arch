@@ -1,9 +1,9 @@
 package entity
 
 import (
-	"time"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
+	"time"
 )
 
 type Event struct {
