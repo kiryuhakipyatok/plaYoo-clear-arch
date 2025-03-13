@@ -1,13 +1,15 @@
 package handlers
 
 import (
-	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
+	"fmt"
 	"playoo/internal/domain/service"
 	"playoo/internal/dto"
 	e "playoo/pkg/errors"
 	"strconv"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 )
 
 type EventHandler struct {
@@ -38,11 +40,12 @@ func (eh *EventHandler) CreateEvent(c *fiber.Ctx) error {
 	if err := eh.Validator.Struct(request); err != nil {
 		return eh.ErrorHandler.FailedToValidate(c, err)
 	}
+	fmt.Println(request)
 	event, err := eh.EventService.CreateEvent(ctx, request.AuthorId, request.Body, request.Game, request.Max, request.Minute)
 	if err != nil {
 		return eh.ErrorHandler.FailedToCreate(c, "event", err)
 	}
-	eh.Logger.Infof("event created: %s", event.Id)
+	eh.Logger.Infof("event created: %v", event.Id)
 	response := dto.EventResponse{
 		Id:       event.Id,
 		AuthorId: event.AuthorId,

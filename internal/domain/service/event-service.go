@@ -40,7 +40,7 @@ func NewEventService(
 }
 
 func (es eventService) CreateEvent(c context.Context, id, body, name string, max, minute int) (*entity.Event, error) {
-	res, err := es.Transactor.WithinTransaction(c, func(c context.Context) (interface{}, error) {
+	res, err := es.Transactor.WithinTransaction(c, func(c context.Context) (any, error) {
 		user, err := es.UserRepository.FindById(c, id)
 		if err != nil {
 			return nil, err
