@@ -31,7 +31,7 @@ func (gh *GameHandler) AddGameToUser(c *fiber.Ctx) error {
 	id := c.Query("id")
 	if err := gh.GameService.AddGameToUser(ctx, game, id); err != nil {
 		gh.Logger.WithError(err).Error("failed add game to user")
-		c.JSON(fiber.StatusInternalServerError)
+		c.Status(fiber.StatusInternalServerError)
 		return c.JSON(fiber.Map{
 			"error": "failed to add game to user",
 		})
@@ -74,7 +74,7 @@ func (gh *GameHandler) DeleteGame(c *fiber.Ctx) error {
 	id := c.Query("id")
 	if err := gh.GameService.DeleteGame(ctx, id, game); err != nil {
 		gh.Logger.WithError(err).Error("failed delete game from user")
-		c.JSON(fiber.StatusInternalServerError)
+		c.Status(fiber.StatusInternalServerError)
 		return c.JSON(fiber.Map{
 			"error": "failed delete game from user",
 		})

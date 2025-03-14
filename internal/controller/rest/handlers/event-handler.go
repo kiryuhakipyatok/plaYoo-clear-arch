@@ -140,7 +140,7 @@ func (eh *EventHandler) Unjoin(c *fiber.Ctx) error {
 	eid := c.Query("event")
 	if err := eh.EventService.Unjoin(ctx, id, eid); err != nil {
 		eh.Logger.WithError(err).Error("failed to unjoin from event")
-		c.JSON(fiber.StatusInternalServerError)
+		c.Status(fiber.StatusInternalServerError)
 		return c.JSON(fiber.Map{
 			"error": "failed to unjoin from event",
 		})
