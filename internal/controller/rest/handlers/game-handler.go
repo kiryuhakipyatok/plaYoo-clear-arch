@@ -1,12 +1,14 @@
 package handlers
 
 import (
-	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
+	"fmt"
 	"playoo/internal/domain/service"
 	e "playoo/pkg/errors"
 	"strconv"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 )
 
 type GameHandler struct {
@@ -33,7 +35,7 @@ func (gh *GameHandler) AddGameToUser(c *fiber.Ctx) error {
 		gh.Logger.WithError(err).Error("failed add game to user")
 		c.JSON(fiber.StatusInternalServerError)
 		return c.JSON(fiber.Map{
-			"error": "failed to add game to user",
+			"error": fmt.Sprintf("failed to add game to user: %v",err),
 		})
 	}
 	gh.Logger.Infof("game %s added to %s", game, id)
