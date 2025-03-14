@@ -15,7 +15,9 @@ func NewLogger() *logrus.Logger {
 	file, err := os.OpenFile("../../files/logging/logrus.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.WithError(err).Info("failed to open log file, using default stdout")
+		log.SetOutput(os.Stdout)
+	}else{
+		log.SetOutput(io.MultiWriter(file, os.Stdout))
 	}
-	log.SetOutput(io.MultiWriter(file, os.Stdout))
 	return log
 }
