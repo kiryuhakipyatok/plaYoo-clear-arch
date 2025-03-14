@@ -19,7 +19,7 @@ type User struct {
 	Comments        pq.StringArray `gorm:"type:uuid[]" json:"comments"`
 	Games           pq.StringArray `gorm:"type:text[]" json:"games"`
 	Notifications   pq.StringArray `gorm:"type:uuid[]" json:"notifications"`
-	Password        string	       `json:"-" gorm:"not null"`
+	Password        []byte	       `json:"-" gorm:"not null"`
 	Avatar          string
 	Discord         string
 }
