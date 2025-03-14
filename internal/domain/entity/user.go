@@ -8,7 +8,7 @@ import (
 type User struct {
 	Id              uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"id"`
 	Login           string         `json:"login" gorm:"not null;unique"`
-	Telegram      	string         `json:"telegram" gorm:"not null"`
+	Telegram      	string         `json:"telegram" gorm:"not null;unique"`
 	ChatId          string         `json:"chat_id" gorm:"uniqe"`
 	Followers       pq.StringArray `gorm:"type:uuid[]" json:"followers"`
 	Followings      pq.StringArray `gorm:"type:uuid[]" json:"followings"`
@@ -19,7 +19,7 @@ type User struct {
 	Comments        pq.StringArray `gorm:"type:uuid[]" json:"comments"`
 	Games           pq.StringArray `gorm:"type:text[]" json:"games"`
 	Notifications   pq.StringArray `gorm:"type:uuid[]" json:"notifications"`
-	Password        []byte         `json:"-" gorm:"not null"`
+	Password        string	       `json:"-" gorm:"not null"`
 	Avatar          string
 	Discord         string
 }

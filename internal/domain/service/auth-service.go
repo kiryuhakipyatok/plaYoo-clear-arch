@@ -41,7 +41,7 @@ func (as authService) Register(c context.Context, login, tg, password string) (*
 		Id:       uuid.New(),
 		Login:    login,
 		Telegram: tg,
-		Password: hashPassword,
+		Password: string(hashPassword),
 	}
 	if err := as.UserRepository.Create(c, user); err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (as authService) GetTokenForLogin(c context.Context, login, password string
 	if err != nil {
 		return "", err
 	}
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return "", err
 	}
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
