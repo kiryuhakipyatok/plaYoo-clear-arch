@@ -22,7 +22,7 @@ func (sheduleEvents *SheduleEvents) SetupSheduleEvents(stop chan struct{}) {
 	cr := cron.New()
 	cr.AddFunc("@every 1m", func() {
 		now := time.Now()
-		upcoming, err := sheduleEvents.EventService.FindUpcoming(context.Background(), now.Add(11*time.Minute))
+		upcoming, err := sheduleEvents.EventService.FindUpcoming(context.Background(), now.Add(10*time.Minute))
 		if err != nil {
 			log.Printf("failed to fetch upcoming events: %v", err)
 		}
@@ -40,7 +40,7 @@ func (sheduleEvents *SheduleEvents) SetupSheduleEvents(stop chan struct{}) {
 				}
 			}
 		}
-		current, err := sheduleEvents.EventService.FindUpcoming(context.Background(), now.Add(1*time.Minute).Add(30*time.Second))
+		current, err := sheduleEvents.EventService.FindUpcoming(context.Background(), now.Add(1*time.Minute))
 		if err != nil {
 			log.Printf("failed to fetch upcoming events: %v", err)
 		}
