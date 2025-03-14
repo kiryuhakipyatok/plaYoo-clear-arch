@@ -40,7 +40,7 @@ func (as authService) Register(c context.Context, login, tg, password string) (*
 	user := entity.User{
 		Id:       uuid.New(),
 		Login:    login,
-		Tg: tg,
+		Telegram: tg,
 		Password: hashPassword,
 	}
 	if err := as.UserRepository.Create(c, user); err != nil {
