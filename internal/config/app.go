@@ -80,6 +80,7 @@ func StartShedule(config *BootstrapConfig, stop chan struct{}) {
 		NoticeService: noticeService,
 		EventService:  eventService,
 		UserService:   userService,
+		Logger: 	   config.Logger,
 		Bot:           config.Bot,
 	}
 	sheduleEvents.SetupSheduleEvents(stop)
