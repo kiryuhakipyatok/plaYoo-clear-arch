@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
-	"github.com/google/uuid"
+	"errors"
 	"playoo/internal/domain/entity"
 	"playoo/internal/domain/repository"
+	"slices"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type EventService interface {
@@ -48,6 +51,9 @@ func (es eventService) CreateEvent(c context.Context, id, body, name string, max
 		game, err := es.GameRepository.FindByName(c, name)
 		if err != nil {
 			return nil, err
+		}
+		if !slices.Contains(user.Games,game.Name){
+			return nil,errors.New("user does not have this game")
 		}
 		event := entity.Event{
 			Id:       uuid.New(),
