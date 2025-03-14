@@ -106,7 +106,7 @@ func (ur *userRepository) FindByLogin(c context.Context, login string) (*entity.
 
 func (ur *userRepository) FindByTg(c context.Context, tg string) (*entity.User, error) {
 	user := entity.User{}
-	if err := ur.DB.WithContext(c).First(&user, "tg = ?", tg).Error; err != nil {
+	if err := ur.DB.WithContext(c).First(&user, "telegram = ?", tg).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -125,7 +125,7 @@ func (ur *userRepository) FindByAmount(c context.Context, amount int) ([]entity.
 
 func (ur *userRepository) ExistByLoginOrTg(c context.Context, login, tg string) bool {
 	user := entity.User{}
-	if err := ur.DB.WithContext(c).First(&user, "login = ? or tg = ?", login, tg).Error; err != nil {
+	if err := ur.DB.WithContext(c).First(&user, "login = ? or telegram = ?", login, tg).Error; err != nil {
 		return false
 	}
 	return true
