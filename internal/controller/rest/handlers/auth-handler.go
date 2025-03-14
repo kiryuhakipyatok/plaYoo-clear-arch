@@ -49,7 +49,7 @@ func (ah *AuthHandler) Register(c *fiber.Ctx) error {
 	respone := dto.RegisterResponse{
 		Id:       user.Id,
 		Login:    user.Login,
-		Telegram: user.Telegram,
+		Telegram: user.Tg,
 	}
 	return c.JSON(respone)
 }

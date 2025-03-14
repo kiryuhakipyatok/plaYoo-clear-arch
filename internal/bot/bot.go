@@ -44,7 +44,7 @@ func (b *Bot) SendMsg(event entity.Event, msg string) error {
 			chatID, _ := strconv.ParseInt(user.ChatId, 10, 64)
 			message := tgbotapi.NewMessage(chatID, msg)
 			if _, err := b.bot.Send(message); err != nil {
-				log.Printf("failed to send message to user %s: %v", user.Telegram, err)
+				log.Printf("failed to send message to user %s: %v", user.Tg, err)
 			}
 		}
 	}
