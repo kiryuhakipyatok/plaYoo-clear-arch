@@ -42,6 +42,7 @@ func (eh *EventHandler) CreateEvent(c *fiber.Ctx) error {
 	}
 	fmt.Println(request)
 	event, err := eh.EventService.CreateEvent(ctx, request.AuthorId, request.Body, request.Game, request.Max, request.Minute)
+	fmt.Println(err)
 	if err != nil {
 		return eh.ErrorHandler.FailedToCreate(c, "event", err)
 	}
