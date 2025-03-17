@@ -84,8 +84,6 @@ func (ah *AuthHandler) Login(c *fiber.Ctx) error {
 
 	c.Cookie(&cookie)
 
-	ah.Logger.Infof("user logined: %s", token)
-
 	return c.JSON(fiber.Map{
 		"message": "success",
 	})
