@@ -16,12 +16,21 @@ type RoutConfig struct {
 }
 
 func (cfg *RoutConfig) Setup() {
+	cfg.SetupCSRF()
 	cfg.SetupUserRoute()
 	cfg.SetupAuthRoute()
 	cfg.SetupGameRoute()
 	cfg.SetupNewsRoute()
 	cfg.SetupEventRoute()
 	cfg.SetupNotificationsRoute()
+}
+
+func (cfg *RoutConfig) SetupCSRF(){
+	cfg.App.Get("/csrf",func (c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"csrf_token": c.Locals("csrf"),
+		})
+	})
 }
 
 func (cfg *RoutConfig) SetupUserRoute() {
