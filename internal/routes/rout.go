@@ -24,6 +24,14 @@ func (cfg *RoutConfig) Setup() {
 	cfg.SetupNotificationsRoute()
 }
 
+func (cfg *RoutConfig) SetupCSRF(){
+	cfg.App.Get("/csrf",func (c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"csrf_token": c.Locals("csrf"),
+		})
+	})
+}
+
 func (cfg *RoutConfig) SetupUserRoute() {
 	cfg.App.Patch("/api/users/avatar/:id", cfg.UserHandler.UploadAvatar)
 	cfg.App.Patch("/api/users/discord", cfg.UserHandler.RecordDiscord)
