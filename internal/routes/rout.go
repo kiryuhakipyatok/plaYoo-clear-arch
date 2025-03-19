@@ -16,6 +16,7 @@ type RoutConfig struct {
 }
 
 func (cfg *RoutConfig) Setup() {
+	cfg.SetupCSRF()
 	cfg.SetupUserRoute()
 	cfg.SetupAuthRoute()
 	cfg.SetupGameRoute()
