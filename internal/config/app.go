@@ -13,6 +13,8 @@ import (
 	"playoo/internal/routes"
 	"playoo/internal/shedulers"
 	e "playoo/pkg/errors"
+	"github.com/gofiber/jwt/v3"
+	"os"
 )
 
 type BootstrapConfig struct {
@@ -51,8 +53,13 @@ func Bootstrap(config *BootstrapConfig, stop chan struct{}) {
 	newsHandler := handlers.NewNewsHandler(newsService, commentService, config.Validator, config.Logger, config.ErrorHandler)
 	noticeHandler := handlers.NewNoticeHandler(noticeService, config.Validator, config.Logger, config.ErrorHandler)
 
+	jwtMiddleware := jwtware.New(jwtware.Config{
+		SigningKey: []byte(os.Getenv("SECRET")),
+	})
+
 	routConfig := routes.RoutConfig{
 		App:           config.App,
+		AuthCheck: 	   jwtMiddleware,
 		UserHandler:   &userHandler,
 		AuthHandler:   &authHander,
 		GameHandler:   &gameHandler,

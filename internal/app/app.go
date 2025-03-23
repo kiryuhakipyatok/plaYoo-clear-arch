@@ -15,7 +15,7 @@ import (
 )
 
 func StartApp() {
-	if err := godotenv.Load("../../.env"); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("error loading .env file: %v", err.Error())
 	}
 	postgres, err := config.ConnectToPostgres()
@@ -52,7 +52,6 @@ func StartApp() {
 	logger := config.NewLogger()
 	validator := config.NewValidator()
 	errorhandler := e.NewErrorHandler(logger)
-
 	cfg := &config.BootstrapConfig{
 		App:          app,
 		Postgres:     postgres,

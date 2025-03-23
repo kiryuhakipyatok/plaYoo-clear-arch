@@ -38,7 +38,7 @@ func (nr newsService) CreateNews(c context.Context, title, body, link string, pi
 		Time:  time.Now(),
 		Link:  link,
 	}
-	uploadDir := "../../files/news-pictures"
+	uploadDir := "/files/news-pictures"
 	if err := os.MkdirAll(uploadDir, 0755); err != nil {
 		return nil, err
 	}

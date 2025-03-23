@@ -1,28 +1,40 @@
-version: '3.8'
-
 services:
-  psql_bp:
-    image: postgres:latest
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  app:
+    build: ./
     ports:
-      - "${PGPORT}:5555"  
+      - 3333:3333
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+    environment:
+      - PGHOST=${PGHOST}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - PGPORT=${PGPORT}
+      - REDISPORT=${REDISHOST}
     volumes:
-      - psql_volume_bp:/var/lib/postgresql/data
-
+      - ./files:/files
+  db:
+    image: postgres:latest
+    volumes:
+      - ./.db/postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
   redis:
     image: redis:latest
-    restart: unless-stopped
     ports:
-      - "${REDISPORT}:6379"
-    volumes:
-      - redis_volume:/data
-    command: redis-server --appendonly yes  
-
-volumes:
-  psql_volume_bp:
-  redis_volume:
-
+      - 6379:6379

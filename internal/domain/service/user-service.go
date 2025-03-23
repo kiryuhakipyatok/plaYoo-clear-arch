@@ -70,7 +70,7 @@ func (ur userService) UploadAvatar(c context.Context, id string, picture *multip
 	if err != nil {
 		return err
 	}
-	uploadDir := "../../files/avatars"
+	uploadDir := "/files/avatars"
 	if err := os.MkdirAll(uploadDir, 0755); err != nil {
 		return err
 	}

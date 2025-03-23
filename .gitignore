@@ -23,6 +23,9 @@ tmp/
 logrus.log
 .env
 
+.db
+.redis
+
 main
 *templ.go
 

@@ -75,7 +75,7 @@ func (ah *AuthHandler) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	cookie := fiber.Cookie{
+	cookie:= fiber.Cookie{
 		Name:     "jwt",
 		Value:    token,
 		Expires:  time.Now().Add(time.Hour * 24),
@@ -97,6 +97,7 @@ func (ah *AuthHandler) Logout(c *fiber.Ctx) error {
 		HTTPOnly: true,
 	}
 	c.Cookie(&cookie)
+	c.ClearCookie("csrf")
 	return c.JSON(fiber.Map{
 		"message": "success",
 	})

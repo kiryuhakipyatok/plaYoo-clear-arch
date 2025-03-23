@@ -7,7 +7,7 @@ import (
 )
 
 type Event struct {
-	Id          uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"event_id"`
+	Id          uuid.UUID      `gorm:"type:uuid;default:gen_random_uuid();primary_key" json:"event_id"`
 	AuthorId    uuid.UUID      `gorm:"type:uuid;not null" json:"author_id"`
 	Body        string         `json:"body" gorm:"not null"`
 	Game        string         `json:"game" gorm:"not null"`

@@ -7,7 +7,7 @@ import (
 )
 
 type News struct {
-	Id       uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"news_id"`
+	Id       uuid.UUID      `gorm:"type:uuid;default:gen_random_uuid();primary_key" json:"news_id"`
 	Title    string         `gorm:"not null" json:"title"`
 	Body     string         `json:"body" gorm:"not null;default:CURRENT_TIMESTAMP"`
 	Time     time.Time      `json:"time" gorm:"not null"`
