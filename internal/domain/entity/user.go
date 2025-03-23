@@ -9,7 +9,7 @@ type User struct {
 	Id              uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"id"`
 	Login           string         `json:"login" gorm:"not null;unique"`
 	Telegram      	string         `json:"telegram" gorm:"not null;unique"`
-	ChatId          string         `json:"chat_id" gorm:"unique"`
+	ChatId          string         `json:"chat_id"`
 	Followers       pq.StringArray `gorm:"type:uuid[]" json:"followers"`
 	Followings      pq.StringArray `gorm:"type:uuid[]" json:"followings"`
 	Rating          float64        `json:"rating"`
