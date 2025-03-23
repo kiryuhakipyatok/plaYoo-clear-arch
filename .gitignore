@@ -20,11 +20,11 @@ tmp/
 
 /files
 
-logrus.log
-.env
-
 .db
 .redis
+
+logrus.log
+.env
 
 main
 *templ.go
