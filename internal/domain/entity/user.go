@@ -20,6 +20,6 @@ type User struct {
 	Games           pq.StringArray `gorm:"type:text[]" json:"games"`
 	Notifications   pq.StringArray `gorm:"type:uuid[]" json:"notifications"`
 	Password        []byte	       `json:"-" gorm:"not null"`
-	Avatar          string
-	Discord         string
+	Discord         string		   `json:"discord"`
+	Avatar          string		   `json:"avatar"`
 }
