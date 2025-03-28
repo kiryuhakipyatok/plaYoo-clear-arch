@@ -1,15 +1,15 @@
 package handlers
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
 	"os"
 	"playoo/internal/domain/service"
 	"playoo/internal/dto"
 	e "playoo/pkg/errors"
 	"time"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 )
 
 type AuthHandler struct {
@@ -74,15 +74,14 @@ func (ah *AuthHandler) Login(c *fiber.Ctx) error {
 			"error": "failed login: " + err.Error(),
 		})
 	}
-
-	cookie:= fiber.Cookie{
+	jwt:= fiber.Cookie{
 		Name:     "jwt",
 		Value:    token,
 		Expires:  time.Now().Add(time.Hour * 24),
 		HTTPOnly: true,
 	}
 
-	c.Cookie(&cookie)
+	c.Cookie(&jwt)
 
 	return c.JSON(fiber.Map{
 		"message": "success",
@@ -90,14 +89,24 @@ func (ah *AuthHandler) Login(c *fiber.Ctx) error {
 }
 
 func (ah *AuthHandler) Logout(c *fiber.Ctx) error {
-	cookie := fiber.Cookie{
+	jwt := fiber.Cookie{
 		Name:     "jwt",
 		Value:    "",
 		Expires:  time.Now().Add(-time.Hour),
 		HTTPOnly: true,
+		SameSite: "Lax",
+		Path:     "/",
 	}
-	c.Cookie(&cookie)
-	c.ClearCookie("csrf")
+	csrf := fiber.Cookie{
+		Name:     "csrf",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		SameSite: "Lax",
+		HTTPOnly: true,
+		Path:     "/",
+	}
+	c.Cookie(&csrf)
+	c.Cookie(&jwt)
 	return c.JSON(fiber.Map{
 		"message": "success",
 	})
@@ -114,10 +123,10 @@ func (ah *AuthHandler) GetLoggedUser(c *fiber.Ctx) error {
 		return []byte(secret), nil
 	})
 	if err != nil {
-		ah.Logger.WithError(err).Info("unauthenticated")
-		c.Status(fiber.StatusUnauthorized)
+		ah.Logger.WithError(err).Info("error get token")
+		c.Status(fiber.StatusInternalServerError)
 		return c.JSON(fiber.Map{
-			"error": "unauthenticated",
+			"error": "error get token",
 		})
 	}
 	claims := token.Claims.(*jwt.StandardClaims)
@@ -130,3 +139,9 @@ func (ah *AuthHandler) GetLoggedUser(c *fiber.Ctx) error {
 
 	return c.JSON(user)
 }
+
+// func AuthCheck(){
+// 	jwtMiddleware := jwtware.New(jwtware.Config{
+// 		SigningKey: []byte(os.Getenv("SECRET")),
+// 	})
+// }

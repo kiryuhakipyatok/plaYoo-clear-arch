@@ -7,7 +7,6 @@ import (
 
 type RoutConfig struct {
 	App           *fiber.App
-	AuthCheck	   fiber.Handler
 	UserHandler   *handlers.UserHandler
 	AuthHandler   *handlers.AuthHandler
 	GameHandler   *handlers.GameHandler
@@ -28,7 +27,7 @@ func (cfg *RoutConfig) Setup() {
 
 func (cfg *RoutConfig) SetupCSRF(){
 	cfg.App.Get("/csrf",func (c *fiber.Ctx) error {
-		csrf:=c.Cookies("csrf")
+		csrf:=c.Locals("csrf")
 		return c.JSON(fiber.Map{
 			"csrf_token": csrf,
 		})
@@ -36,7 +35,7 @@ func (cfg *RoutConfig) SetupCSRF(){
 }
 
 func (cfg *RoutConfig) SetupUserRoute() {
-	userGroup:=cfg.App.Group("/api/users", cfg.AuthCheck)
+	userGroup:=cfg.App.Group("/api/users")
 
 	userGroup.Patch("/avatar/:id", cfg.UserHandler.UploadAvatar)
 	userGroup.Patch("/discord", cfg.UserHandler.RecordDiscord)
@@ -55,14 +54,12 @@ func (cfg *RoutConfig) SetupUserRoute() {
 func (cfg *RoutConfig) SetupAuthRoute() {
 	cfg.App.Post("/api/register", cfg.AuthHandler.Register)
 	cfg.App.Post("/api/login", cfg.AuthHandler.Login)
-	cfg.App.Use("/api/logout",cfg.AuthCheck)
 	cfg.App.Post("/api/logout", cfg.AuthHandler.Logout)
-
 	cfg.App.Get("/api/profile", cfg.AuthHandler.GetLoggedUser)
 }
 
 func (cfg *RoutConfig) SetupGameRoute() {
-	gameGroup:=cfg.App.Group("/api/games", cfg.AuthCheck)
+	gameGroup:=cfg.App.Group("/api/games")
 
 	gameGroup.Patch("",cfg.GameHandler.AddGameToUser)
 
@@ -72,7 +69,7 @@ func (cfg *RoutConfig) SetupGameRoute() {
 }
 
 func (cfg *RoutConfig) SetupEventRoute() {
-	eventsGroup:=cfg.App.Group("/api/events", cfg.AuthCheck)
+	eventsGroup:=cfg.App.Group("/api/events")
 	eventsGroup.Post("", cfg.EventHandler.CreateEvent)
 
 	eventsGroup.Patch("/comments", cfg.EventHandler.AddComment)
@@ -86,7 +83,7 @@ func (cfg *RoutConfig) SetupEventRoute() {
 }
 
 func (cfg *RoutConfig) SetupNewsRoute() {
-	newsGroup:=cfg.App.Group("/api/news", cfg.AuthCheck)
+	newsGroup:=cfg.App.Group("/api/news")
 	
 	cfg.App.Post("/api/news", cfg.NewsHandler.CreateNews)
 
@@ -99,7 +96,7 @@ func (cfg *RoutConfig) SetupNewsRoute() {
 }
 
 func (cfg *RoutConfig) SetupNotificationsRoute() {
-	notificationsGroup:=cfg.App.Group("/api/notifications", cfg.AuthCheck)
+	notificationsGroup:=cfg.App.Group("/api/notifications")
 
 	notificationsGroup.Delete("", cfg.NoticeHandler.DeleteNotice)
 	notificationsGroup.Delete("/:id", cfg.NoticeHandler.DeleteAllNotifications)

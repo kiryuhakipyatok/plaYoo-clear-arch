@@ -100,12 +100,14 @@ func (ns noticeService) GetNoticeByAmount(c context.Context, id string, amount i
 		return nil, err
 	}
 	notifications := []entity.Notice{}
-	for _, n := range user.Notifications[:amount] {
-		nts, err := ns.NoticeRepository.FindById(c, n)
-		if err != nil {
-			return nil, err
+	if len(user.Notifications)>0{
+		for _, n := range user.Notifications[:amount] {
+			nts, err := ns.NoticeRepository.FindById(c, n)
+			if err != nil {
+				return nil, err
+			}
+			notifications = append(notifications, *nts)
 		}
-		notifications = append(notifications, *nts)
 	}
 
 	return notifications, nil
